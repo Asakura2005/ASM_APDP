@@ -1,0 +1,115 @@
+﻿@model SIMS.Models.Attendance.TakeAttendanceViewModel
+
+@{
+    ViewData["Title"] = "Take Attendance";
+}
+
+<h1 class="mb-4">
+    <i class="fas fa-edit"></i> Take Attendance:
+    <span class="text-primary">@Model.ClassName - @Model.CourseName</span>
+</h1>
+
+<form asp-action="Submit" method="post">
+    @Html.AntiForgeryToken()
+
+    @* Pass hidden fields to the POST action *@
+    <input type="hidden" asp-for="ClassId" />
+    <input type="hidden" asp-for="CourseId" />
+    <input type="hidden" asp-for="ClassName" />
+    <input type="hidden" asp-for="CourseName" />
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Attendance Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="form-group mb-0">
+                        <label asp-for="AttendanceDate" class="control-label font-weight-bold">Attendance Date</label>
+                        <input asp-for="AttendanceDate" type="date" class="form-control" id="attendance-date-picker" />
+                        <span asp-validation-for="AttendanceDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-users"></i> Student List</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 25%;">Student Name</th>
+                            <th style="width: 15%;">Student Number</th>
+                            <th style="width: 25%;" class="text-center">Status</th>
+                            <th style-="width: 30%;">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Students.Count; i++)
+                        {
+                            <tr>
+                                @* Bind hidden fields for each student's data *@
+                                <input type="hidden" asp-for="Students[i].StudentId" />
+                                <input type="hidden" asp-for="Students[i].StudentName" />
+                                <input type="hidden" asp-for="Students[i].StudentNumber" />
+
+                                <td>@(i + 1)</td>
+                                <td>@Model.Students[i].StudentName</td>
+                                <td>@Model.Students[i].StudentNumber</td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                        <label class="btn btn-outline-success btn-sm @(Model.Students[i].Status == "Present" ? "active" : "")">
+                                            <input type="radio" asp-for="Students[i].Status" value="Present" checked> Present
+                                        </label>
+                                        <label class="btn btn-outline-warning btn-sm @(Model.Students[i].Status == "Late" ? "active" : "")">
+                                            <input type="radio" asp-for="Students[i].Status" value="Late"> Late
+                                        </label>
+                                        <label class="btn btn-outline-danger btn-sm @(Model.Students[i].Status == "Absent" ? "active" : "")">
+                                            <input type="radio" asp-for="Students[i].Status" value="Absent"> Absent
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" asp-for="Students[i].Remarks" class="form-control form-control-sm" placeholder="(Optional)" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mt-4 text-center">
+        <button type="submit" class="btn btn-success btn-lg shadow">
+            <i class="fas fa-save"></i> Submit Attendance
+        </button>
+        <a asp-action="Index" class="btn btn-secondary btn-lg ml-2">
+            <i class="fas fa-arrow-left"></i> Cancel
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById('attendance-date-picker').addEventListener('change', function () {
+            var date = this.value;
+            var classId = document.querySelector('input[name="ClassId"]').value;
+            var courseId = document.querySelector('input[name="CourseId"]').value;
+
+            // Reload the page with the new date
+            window.location.href = `@Url.Action("Take", "Attendance")?classId=${classId}&courseId=${courseId}&attendanceDate=${date}`;
+        });
+    </script>
+}

@@ -1,0 +1,196 @@
+﻿@model SIMS.Models.Student.StudentAttendanceReportViewModel
+
+@{
+    ViewData["Title"] = "Attendance Report";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">@ViewData["Title"]</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="#">Student</a></li>
+        <li class="breadcrumb-item active">Attendance Report</li>
+    </ol>
+
+    @if (Model == null || !Model.Records.Any())
+    {
+        <div class="text-center mt-5">
+            <i class="fas fa-clipboard-question fa-4x text-muted mb-3"></i>
+            <h4>No Data Found</h4>
+            <p class="text-muted">There is currently no attendance data for your account.</p>
+        </div>
+    }
+    else
+    {
+        <!-- Statistics Cards -->
+        <div class="row">
+            <!-- Attendance Rate -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Attendance Rate</div>
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@Model.AttendanceRate.ToString("0.00")%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Present Sessions -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Present Sessions</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PresentCount</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Late Sessions -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Late Sessions</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.LateCount</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-clock fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Absent Sessions -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Absent Sessions</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.AbsentCount</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-times fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Attendance Table -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Detailed Attendance History</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Course</th>
+                                <th>Class</th>
+                                <th>Teacher</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var record in Model.Records)
+                            {
+                                <tr>
+                                    <td>@record.AttendanceDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@record.CourseName</td>
+                                    <td>@record.ClassName</td>
+                                    <td>@record.TeacherName</td>
+                                    <td>
+                                        @switch (record.Status)
+                                        {
+                                            case "Present":
+                                                <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Present</span>
+                                                break;
+                                            case "Late":
+                                                <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i> Late</span>
+                                                break;
+                                            case "Absent":
+                                                <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i> Absent</span>
+                                                break;
+                                            case "Permitted":
+                                                <span class="badge bg-info"><i class="fas fa-info-circle me-1"></i> Permitted</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">@record.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@record.Remarks</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .border-left-primary {
+            border-left: .25rem solid #4e73df !important;
+        }
+
+        .border-left-success {
+            border-left: .25rem solid #1cc88a !important;
+        }
+
+        .border-left-info {
+            border-left: .25rem solid #36b9cc !important;
+        }
+
+        .border-left-warning {
+            border-left: .25rem solid #f6c23e !important;
+        }
+
+        .border-left-danger {
+            border-left: .25rem solid #e74a3b !important;
+        }
+
+        .text-xs {
+            font-size: .8rem;
+        }
+
+        .text-gray-300 {
+            color: #dddfeb !important;
+        }
+
+        .text-gray-800 {
+            color: #5a5c69 !important;
+        }
+
+        .badge {
+            padding: 0.4em 0.7em;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+    </style>
+}

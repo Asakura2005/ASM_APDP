@@ -1,0 +1,14 @@
+using Microsoft.AspNetCore.Mvc;
+using SIMS.DatabaseContext;
+
+public class DebugController : Controller
+{
+    private readonly SimDbContext _db;
+    public DebugController(SimDbContext db) => _db = db;
+
+    public IActionResult WhichDb()
+    {
+        var cs = _db.Database.GetDbConnection().ConnectionString;
+        return Content(cs);
+    }
+}

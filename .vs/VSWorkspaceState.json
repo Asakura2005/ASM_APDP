@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\SIMS",
+    "\\SIMS\\bin",
+    "\\SIMS\\bin\\Debug",
+    "\\SIMS\\bin\\Debug\\net8.0",
+    "\\SIMS\\DatabaseContext",
+    "\\SIMS\\Views",
+    "\\SIMS\\Views\\Shared",
+    "\\SIMS\\Views\\Shared\\Partials"
+  ],
+  "PreviewInSolutionExplorer": false
+}
